@@ -5,3 +5,125 @@ git commit -m "first commit"
 git branch -M main
 git remote add origin https://github.com/MilanKaranovicUO/podorowidgetmiki1.git
 git push -u origin main
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pomodoro Widget</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #f4f4f4;
+        }
+        .pomodoro {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: inline-block;
+            margin-top: 40px;
+        }
+        #timer {
+            font-size: 48px;
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 24px;
+            margin: 6px;
+            border: none;
+            border-radius: 6px;
+            background: #d35400;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:active {
+            background: #b14000;
+        }
+        #notification {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            background: #27ae60;
+            color: #fff;
+            font-weight: bold;
+            font-size: 18px;
+            animation: fadein 1s;
+        }
+        @keyframes fadein {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="pomodoro">
+        <h2>Pomodoro Timer</h2>
+        <div id="timer">25:00</div>
+        <button onclick="startTimer()">Start</button>
+        <button onclick="pauseTimer()">Pause</button>
+        <button onclick="resetTimer()">Reset</button>
+        <div id="notification">Pomodoro je završen!</div>
+    </div>
+
+    <script>
+        let duration = 25 * 60; // 25 minutes
+        let time = duration;
+        let timerInterval = null;
+        let isPaused = false;
+
+        function updateDisplay() {
+            const minutes = Math.floor(time / 60).toString().padStart(2, '0');
+            const seconds = (time % 60).toString().padStart(2, '0');
+            document.getElementById('timer').textContent = `${minutes}:${seconds}`;
+        }
+
+        function showNotification() {
+            document.getElementById('notification').style.display = 'block';
+        }
+
+        function hideNotification() {
+            document.getElementById('notification').style.display = 'none';
+        }
+
+        function startTimer() {
+            if (timerInterval || time <= 0) return;
+            hideNotification();
+            timerInterval = setInterval(() => {
+                if (!isPaused) {
+                    if (time > 0) {
+                        time--;
+                        updateDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        showNotification();
+                    }
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            isPaused = !isPaused;
+            // Ako se pauzira, menja se tekst dugmeta
+            document.querySelector('button[onclick="pauseTimer()"]').textContent = isPaused ? 'Resume' : 'Pause';
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            isPaused = false;
+            time = duration;
+            updateDisplay();
+            hideNotification();
+            document.querySelector('button[onclick="pauseTimer()"]').textContent = 'Pause';
+        }
+
+        // Inicijalni prikaz
+        updateDisplay();
+    </script>
+</body>
+</html>
